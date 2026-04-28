@@ -2,6 +2,7 @@ import logging
 import boto3
 from botocore.exceptions import ClientError
 from dotenv import load_dotenv
+from backup_sql import create_backup
 import os
 
 load_dotenv()
@@ -28,11 +29,12 @@ def upload_file(file_name, bucket, object_name=None):
     s3_client = session.client('s3')
     try:
         response = s3_client.upload_file(file_name, bucket, object_name)
+        logging.info(response)
     except ClientError as e:
         logging.error(e)
         return False
     return True
 
-file_to_upload = 'doggystyle-album-cover.jpeg'
+file_to_upload = create_backup()
 
 upload_file(file_to_upload, s3_bucket)
