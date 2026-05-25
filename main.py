@@ -5,6 +5,20 @@ from dotenv import load_dotenv
 from backup_sql import create_backup
 import os
 
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
+
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# add formatter to ch
+ch.setFormatter(formatter)
+
+# add ch to logger
+logger.addHandler(ch)
+
 load_dotenv()
 
 s3_bucket = os.getenv("S3_BUCKET")
@@ -29,9 +43,9 @@ def upload_file(file_name, bucket, object_name=None):
     s3_client = session.client('s3')
     try:
         response = s3_client.upload_file(file_name, bucket, object_name)
-        logging.info(response)
+        logger.info(response)
     except ClientError as e:
-        logging.error(e)
+        logger.error(e)
         return False
     return True
 
