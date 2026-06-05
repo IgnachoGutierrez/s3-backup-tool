@@ -54,8 +54,8 @@ def upload_file(file_name, bucket, object_name=None):
     # Upload the file
     s3_client = session.client('s3')
     try:
-        response = s3_client.upload_file(file_name, bucket, object_name)
-        logger.info(response)
+        s3_client.upload_file(file_name, bucket, object_name)
+        logger.info('File "%s" was uploaded successfully to S3!', file_name)
     except ClientError as e:
         logger.error(e)
         return False
