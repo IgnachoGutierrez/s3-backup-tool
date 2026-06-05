@@ -1,3 +1,4 @@
+import argparse
 import logging
 import boto3
 from botocore.exceptions import ClientError
@@ -5,11 +6,22 @@ from dotenv import load_dotenv
 from backup_sql import create_backup
 import os
 
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--logging",
+    default="info",
+    choices=["debug", "info", "warning", "error", "critical"],
+    help="Set the logging level (default: info)",
+)
+args = parser.parse_args()
+
+level = args.logging.upper()
+
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logger.setLevel(level)
 
 ch = logging.StreamHandler()
-ch.setLevel(logging.INFO)
+ch.setLevel(level)
 
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
