@@ -1,9 +1,35 @@
+import argparse
 import logging
 import boto3
 from botocore.exceptions import ClientError
 from dotenv import load_dotenv
 from backup_sql import create_backup
 import os
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--logging",
+    default="info",
+    choices=["debug", "info", "warning", "error", "critical"],
+    help="Set the logging level (default: info)",
+)
+args = parser.parse_args()
+
+level = args.logging.upper()
+
+logger = logging.getLogger()
+logger.setLevel(level)
+
+ch = logging.StreamHandler()
+ch.setLevel(level)
+
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# add formatter to ch
+ch.setFormatter(formatter)
+
+# add ch to logger
+logger.addHandler(ch)
 
 load_dotenv()
 
@@ -28,10 +54,10 @@ def upload_file(file_name, bucket, object_name=None):
     # Upload the file
     s3_client = session.client('s3')
     try:
-        response = s3_client.upload_file(file_name, bucket, object_name)
-        logging.info(response)
+        s3_client.upload_file(file_name, bucket, object_name)
+        logger.info('File "%s" was uploaded successfully to S3!', file_name)
     except ClientError as e:
-        logging.error(e)
+        logger.error(e)
         return False
     return True
 
