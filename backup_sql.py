@@ -5,19 +5,30 @@ from datetime import datetime
 
 load_dotenv()
 
+def _yes_no(name: str, default: str = "no") -> str:
+    value = os.getenv(name, default).strip().lower()
+    if value not in {"yes", "no"}:
+        raise ValueError(
+            f"{name} must be 'yes' or 'no', got {value!r}"
+        )
+    return value
+
 def get_connection(database):
     """ Establishes a connection to the SQL Server Database """
     server = os.getenv("SERVER")
     username = os.getenv("DB_USER")
     password = os.getenv("DB_PASSWORD")
     driver = os.getenv("DRIVER")  # Ensure you have the correct ODBC driver installed
+    trust_cert = _yes_no("DB_TRUST_SERVER_CERT", default="no")
+
     try:
         conn = pyodbc.connect(
             f'DRIVER={driver};'
             f'SERVER={server};'
             f'DATABASE={database};'
             f'UID={username};'
-            f'PWD={password}'
+            f'PWD={password};'
+            f"TrustServerCertificate={trust_cert};"
         )
         return conn
     except Exception as e:
