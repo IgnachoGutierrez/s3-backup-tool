@@ -4,6 +4,9 @@
 
 One script, one command - back up your SQL Server Database and push it to S3 automatically.
 
+![S3 Backup Tool Screenshot](screenshot.png)
+
+
 </div>
 
 ---
