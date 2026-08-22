@@ -63,4 +63,11 @@ def upload_file(file_name, bucket, object_name=None):
 
 file_to_upload = create_backup()
 
-upload_file(file_to_upload, s3_bucket)
+if file_to_upload is None:
+    logger.error("Backup creation failed; skipping upload.")
+elif upload_file(file_to_upload, s3_bucket):
+    try:
+        os.remove(file_to_upload)
+        logger.info('Local backup file "%s" removed after upload.', file_to_upload)
+    except OSError as e:
+        logger.error('Failed to remove local backup file "%s": %s', file_to_upload, e)
