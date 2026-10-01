@@ -1,7 +1,10 @@
+import logging
 import pyodbc
 import os
 from dotenv import load_dotenv
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -32,7 +35,7 @@ def get_connection(database):
         )
         return conn
     except Exception as e:
-        print(f"Error while trying to connect to database: {e}")
+        logger.error("Error while trying to connect to database: %s", e)
         raise
 
 def create_backup():
@@ -56,12 +59,12 @@ def create_backup():
         backup_file = f'{database}_{timestamp}.bak'
 
         backup_path = os.path.join(backup_dir, backup_file)
-        print(backup_path)
+        logger.debug("Backup path: %s", backup_path)
 
         backup_sql = f"""
         BACKUP DATABASE [{database}] TO DISK = N'{backup_path}' WITH NOFORMAT, NOINIT, NAME = '{database}-full', SKIP, NOREWIND, NOUNLOAD, STATS = 10
         """
-        print(backup_sql)
+        logger.debug("Backup SQL: %s", backup_sql)
 
         cursor.execute(backup_sql)
 
@@ -73,5 +76,5 @@ def create_backup():
         return host_backup_dir
         
     except Exception as e:
-        print(f"Error while creating the backup: {e}")
+        logger.error("Error while creating the backup: %s", e)
         return None
