@@ -59,7 +59,7 @@ def create_backup():
         backup_file = f'{database}_{timestamp}.bak'
 
         backup_path = os.path.join(backup_dir, backup_file)
-        logger.debug("Backup path: %s", backup_path)
+        logger.info("Backup path: %s", backup_path)
 
         backup_sql = f"""
         BACKUP DATABASE [{database}] TO DISK = N'{backup_path}' WITH NOFORMAT, NOINIT, NAME = '{database}-full', SKIP, NOREWIND, NOUNLOAD, STATS = 10
@@ -72,6 +72,8 @@ def create_backup():
             pass
 
         host_backup_dir = os.path.join(host_backup_dir, backup_file)
+
+        logger.info('Backup of database "%s" created: "%s"', database, host_backup_dir)
 
         return host_backup_dir
         
